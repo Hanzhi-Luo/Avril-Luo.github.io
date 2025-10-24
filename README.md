@@ -1,146 +1,132 @@
-# Avril-Luo.github.io
-MLB Batting Analysis (Data Bootcamp Midterm Project)
-Overview
+# MLB Batting Analysis (Data Bootcamp Midterm Project)
 
-This project explores how different batting statistics in Major League Baseball (MLB) relate to both player value and team performance.
-I used the pybaseball API to pull MLB data from 2023 to 2025, cleaned it, averaged stats across seasons, and visualized how metrics like OPS and wOBA connect to overall success.
+## Overview
+This project explores how different **batting statistics** in Major League Baseball (MLB) relate to both **player value** and **team performance**.  
+The data is pulled using the `pybaseball` library from **2023 to 2025**, then cleaned, averaged, and visualized to understand how metrics like OPS and wOBA connect to overall success.
 
-Since the official standings API wasn’t working, I made a simple “fake win percentage” based on each team’s normalized OPS.
-It’s not a real win–loss record, but it works surprisingly well for showing which teams hit better on average.
+Since the official standings API wasn’t returning results, a simple “**fake win percentage**” was created using normalized OPS as a proxy for team success.
 
-Key Questions
 
-Do players with higher OPS or wOBA also have higher WAR (Wins Above Replacement)?
+## Key Questions
+1. Do players with higher **OPS** or **wOBA** tend to have higher **WAR** (Wins Above Replacement)?  
+2. Which team-level batting stats are most related to winning (even with our fake metric)?  
+3. Are these relationships consistent across seasons?
 
-Which team-level batting metrics are most tied to winning (or our fake version of it)?
 
-Are these relationships consistent across seasons?
+## Data Source
+Data was pulled from the **`pybaseball`** package, which scrapes FanGraphs and Baseball Reference.
 
-Data Source
-
-All data came from the pybaseball library (FanGraphs + Baseball Reference).
-Pulled using:
-
+```python
 from pybaseball import batting_stats
 bat = batting_stats(2023, 2025)
+````
+
+Each row represents a player’s seasonal stats.
+I averaged them across seasons (by player and by team) to get more stable trends.
+
+**Main columns used:**
+
+* `OPS` – On-base Plus Slugging
+* `wOBA` – Weighted On-base Average
+* `SLG`, `HR`, `Barrel%`, `HardHit%` – power/contact indicators
+* `WAR` – overall player value
 
 
-Each row in the dataset represents a player’s season stats.
-I averaged them by player and by team to get multi-season trends.
+## Methods
 
-Main features used:
+### 1. Player-Level Analysis
 
-OPS – On-base Plus Slugging
+* Combined 2023–2025 data and averaged each player’s stats.
+* Plotted **OPS vs WAR** and **wOBA vs WAR** to see which metrics align best with value.
+* Generated a correlation heatmap between main hitting metrics.
 
-wOBA – Weighted On-base Average
+### 2. Team-Level Analysis
 
-SLG, HR, Barrel%, HardHit% – power/contact indicators
+* Averaged stats by team.
+* Built a **fake win percentage** using normalized OPS (`OPS / OPS.max()`).
+* Visualized team OPS/wOBA vs fake win%, plus a correlation heatmap.
 
-WAR – overall player value
+### 3. Tools
 
-Methods
-1. Player-Level Analysis
+* `pandas` – data cleaning, grouping
+* `matplotlib` & `seaborn` – visualization
+* `pybaseball` – data collection
 
-Combined 2023–2025 data and averaged stats per player.
 
-Plotted OPS vs WAR and wOBA vs WAR.
+## Results
 
-Calculated correlations and a heatmap between main hitting metrics.
+### Player-Level
 
-2. Team-Level Analysis
+* **OPS** and **wOBA** both show strong positive relationships with **WAR** (corr ≈ 0.8).
+* `Barrel%` and `HardHit%` are moderately correlated (~0.5–0.6).
+* The heatmap confirms OPS and wOBA are the clearest offensive predictors of WAR.
 
-Averaged player data by team.
+### Team-Level
 
-Created a fake_win_pct = OPS / OPS.max() to simulate performance.
+* **Team OPS** and **wOBA** strongly align with the fake win% (corr ≈ 0.85).
+* Teams with higher average OPS also have higher simulated success.
 
-Visualized OPS and wOBA vs fake win%, plus a correlation heatmap.
+---
 
-3. Tools
+## Discussion
 
-pandas for cleaning and grouping
+Even without official standings, the pattern holds:
+teams that get on base more and hit for power win more often.
+OPS and wOBA remain the simplest and most reliable indicators of team offense.
 
-matplotlib + seaborn for charts
+**Limitations**
 
-pybaseball for data retrieval
+* Fake win% is based only on hitting — no pitching or defense.
+* Missing official win/loss data means results are approximate.
+* Correlation ≠ causation.
 
-Results
-Player-Level
+**Next Steps**
+Once standings data works again, re-run the analysis using actual win%.
+Could also integrate pitching stats (ERA, FIP, etc.) for a fuller model.
 
-OPS and wOBA showed strong positive relationships with WAR (correlations ≈ 0.8).
 
-Metrics like Barrel% and HardHit% also mattered, but less strongly (~0.5–0.6).
+## How to Run
 
-Heatmap confirmed these three—OPS, wOBA, and SLG—cluster tightly with WAR.
+### Requirements
 
-Team-Level
-
-When averaged by team, OPS and wOBA again had the strongest link to performance.
-
-Both correlated with the fake win% around 0.8–0.85.
-
-Teams with higher OPS generally had better “win” proxies.
-
-Discussion
-
-Even without real standings, the patterns make sense:
-teams that hit for both power and on-base ability tend to do better overall.
-OPS and wOBA are clearly the simplest and most reliable measures of offensive quality.
-
-Limitations
-
-Real standings weren’t available, so fake win% is just a normalized OPS ratio.
-
-No pitching or defensive data included—those obviously affect wins too.
-
-Correlation doesn’t prove causation, just association.
-
-Next Steps
-
-If the API starts returning real win–loss records again, I’d like to re-run the analysis and compare how close my fake metric comes to actual results.
-Adding pitching data (ERA, FIP, etc.) could also make the model more realistic.
-
-How to Run
-
-Requirements
-
-pybaseball >= 2.2.0  
-pandas  
-matplotlib  
+```
+pybaseball >= 2.2.0
+pandas
+matplotlib
 seaborn
+```
+
+### Steps
+
+1. Open the notebook or Colab.
+2. Install dependencies:
+
+   ```python
+   !pip install pybaseball pandas matplotlib seaborn
+   ```
+3. Run the notebook top to bottom to pull data and generate charts.
 
 
-Steps
+## Folder Structure
 
-Open the notebook or Colab file.
-
-Run the installation cell:
-
-!pip install pybaseball pandas matplotlib seaborn
-
-
-Execute cells top to bottom to load data, clean it, and generate charts.
-
-Folder Structure
+```
 mlb_batting_analysis/
 │
 ├── midterm_for_data_bootcamp.ipynb   # main notebook
-├── midterm_for_data_bootcamp.py      # script version
-├── data/
-│   └── mlb_batting_2023_2025.csv
 └── README.md
+```
 
-Example Insights
+## Example Insights
 
-Aaron Judge and Bobby Witt Jr. were among the top hitters by WAR (2023–2025).
+* Aaron Judge and Bobby Witt Jr. appear among the top hitters by WAR (2023–2025).
+* Team-level OPS correlates with fake win% at **0.84**.
+* Player-level OPS correlates with WAR at **0.79**.
 
-Team-level OPS correlated with the fake win% at 0.84.
 
-Player-level OPS correlated with WAR at 0.79.
+## References
 
-References
+* [pybaseball GitHub](https://github.com/jldbc/pybaseball)
+* [FanGraphs Glossary](https://library.fangraphs.com/statistics/)
+* [Baseball Reference](https://www.baseball-reference.com/)
 
-pybaseball GitHub
 
-FanGraphs Baseball Glossary
-
-Baseball Reference
